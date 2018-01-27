@@ -165,7 +165,7 @@
   1. __Encrypt Password:__
 
      ```cmd
-     E:\GitHub\how-does-Xmanager-encrypt-password\XmanagerCrypto.py -e "This is a test"
+     E:\GitHub\how-does-Xmanager-encrypt-password\python3\Xmanager5CryptoHelper.py -e "This is a test"
      zv21O1x43qRs3c5NckDHvh7ZAvuN1NSJl8ZFL11+UJ+82+KAixa89O3OTAfRTg==
 
      ```
@@ -173,7 +173,7 @@
   2. __Decrypt Password:__
 
      ```cmd
-     E:\GitHub\how-does-Xmanager-encrypt-password\XmanagerCrypto.py -d "zv21O1x43qRs3c5NckDHvh7ZAvuN1NSJl8ZFL11+UJ+82+KAixa89O3OTAfRTg=="
+     E:\GitHub\how-does-Xmanager-encrypt-password\python3\Xmanager5CryptoHelper.py -d "zv21O1x43qRs3c5NckDHvh7ZAvuN1NSJl8ZFL11+UJ+82+KAixa89O3OTAfRTg=="
      This is a test
 
      ```
