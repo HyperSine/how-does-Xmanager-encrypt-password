@@ -1,69 +1,97 @@
-import win32api
-import win32security
-import base64
+#!/usr/bin/env python3
+from base64 import b64encode, b64decode
 from Crypto.Hash import MD5, SHA256
 from Crypto.Cipher import ARC4
 
-class XmanagerCrypto:
+class XShellCrypto(object):
 
-    def __init__(self):
-        self.Key = b'!X@s#h$e%l^l&'
+    def __init__(self, SessionFileVersion = 0xffff, **kwargs):
+        '''
+        SessionFileVersion must be convertable to float
 
-    def EncryptString(self, s : str):
-        Cipher = ARC4.new(MD5.new(self.Key).digest())
-        return base64.b64encode(Cipher.encrypt(s.encode())).decode()
-
-    def DecryptString(self, s : str):
-        Cipher = ARC4.new(MD5.new(self.Key).digest())
-        return Cipher.decrypt(base64.b64decode(s)).decode()
-
-class Xmanager5Crypto:
-
-    def __init__(self, username = '', usersid = ''):
-        if username == '' and usersid == '':
-            self.UserName = win32api.GetUserName()
-            CurrentUserSID = win32security.LookupAccountName(win32api.GetComputerName(), self.UserName)[0]
-            self.UserSID = win32security.ConvertSidToStringSid(CurrentUserSID)
+        Supported kwargs:
+            UserName : str
+            SID : str
+            MasterPassword : str
+        '''
+        self._Version = float(SessionFileVersion)
+        if 0 < self._Version and self._Version < 5.1:
+            self._Key = MD5.new(b'!X@s#h$e%l^l&').digest()
+        elif 5.1 <= self._Version and self._Version <= 5.2:
+            self._Key = SHA256.new(kwargs['SID'].encode()).digest()
+        elif 5.2 < self._Version:
+            if kwargs.get('MasterPassword') == None:
+                self._Key = SHA256.new((kwargs['UserName'] + kwargs['SID']).encode()).digest()
+            else:
+                self._Key = SHA256.new(kwargs['MasterPassword'].encode()).digest()
         else:
-            self.UserName = str(username)
-            self.UserSID = str(usersid)
+            raise ValueError('Invalid argument: SessionFileVersion')
 
-    def EncryptString(self, s : str):
-        Cipher = ARC4.new(SHA256.new(self.UserSID.encode()).digest())
+    def EncryptString(self, String : str):
+        Cipher = ARC4.new(self._Key)
+        if self._Version < 5.1:
+            return b64encode(Cipher.encrypt(String.encode())).decode()
+        else:
+            checksum = SHA256.new(String.encode()).digest()
+            ciphertext = Cipher.encrypt(String.encode())
+            return b64encode(ciphertext + checksum).decode()
+        
 
-        Plaintext = s.encode()
-        Checksum = SHA256.new(Plaintext).digest()
-        Ciphertext = Cipher.encrypt(Plaintext)
+    def DecryptString(self, String : str):
+        Cipher = ARC4.new(self._Key)
+        if self._Version < 5.1:
+            return Cipher.decrypt(b64decode(String)).decode()
+        else:
+            data = b64decode(String)
+            ciphertext, checksum = data[:-SHA256.digest_size], data[-SHA256.digest_size:]
+            plaintext = Cipher.decrypt(ciphertext)
+            if SHA256.new(plaintext).digest() != checksum:
+                raise ValueError('Cannot decrypt string. The key is wrong!')
+            return plaintext.decode()
 
-        return base64.b64encode(Ciphertext + Checksum).decode()
+class XFtpCrypto(object):
 
-    def DecryptString(self, s : str):
-        Cipher = ARC4.new(SHA256.new(self.UserSID.encode()).digest())
+    def __init__(self, SessionFileVersion = 0xffff, **kwargs):
+        '''
+        SessionFileVersion must be convertable to float
 
-        Data = base64.b64decode(s)
-        Checksum = Data[-32:]
-        Ciphertext = Data[0:-32]
-        Plaintext = Cipher.decrypt(Ciphertext)
+        Supported kwargs:
+            UserName : str
+            SID : str
+            MasterPassword : str
+        '''
+        self._Version = float(SessionFileVersion)
+        if 0 < self._Version and self._Version < 5.1:
+            self._Key = MD5.new(b'!X@s#c$e%l^l&').digest()      # key is different with the one in XShellCrypto
+        elif 5.1 <= self._Version and self._Version <= 5.2:
+            self._Key = SHA256.new(kwargs['SID'].encode()).digest()
+        elif 5.2 < self._Version:
+            if kwargs.get('MasterPassword') == None:
+                self._Key = SHA256.new((kwargs['UserName'] + kwargs['SID']).encode()).digest()
+            else:
+                self._Key = SHA256.new(kwargs['MasterPassword'].encode()).digest()
+        else:
+            raise ValueError('Invalid argument: SessionFileVersion')
 
-        assert SHA256.new(Plaintext).digest() == Checksum
-        return Plaintext.decode()
+    def EncryptString(self, String : str):
+        Cipher = ARC4.new(self._Key)
+        if self._Version < 5.1:
+            return b64encode(Cipher.encrypt(String.encode())).decode()
+        else:
+            checksum = SHA256.new(String.encode()).digest()
+            ciphertext = Cipher.encrypt(String.encode())
+            return b64encode(ciphertext + checksum).decode()
+        
 
-    def EncryptString2(self, s: str):
-        Cipher = ARC4.new(SHA256.new((self.UserName + self.UserSID).encode()).digest())
+    def DecryptString(self, String : str):
+        Cipher = ARC4.new(self._Key)
+        if self._Version < 5.1:
+            return Cipher.decrypt(b64decode(String)).decode()
+        else:
+            data = b64decode(String)
+            ciphertext, checksum = data[:-SHA256.digest_size], data[-SHA256.digest_size:]
+            plaintext = Cipher.decrypt(ciphertext)
+            if SHA256.new(plaintext).digest() != checksum:
+                raise ValueError('Cannot decrypt string. The key is wrong!')
+            return plaintext.decode()
 
-        Plaintext = s.encode()
-        Checksum = SHA256.new(Plaintext).digest()
-        Ciphertext = Cipher.encrypt(Plaintext)
-
-        return base64.b64encode(Ciphertext + Checksum).decode()
-
-    def DecryptString2(self, s : str):
-        Cipher = ARC4.new(SHA256.new((self.UserName + self.UserSID).encode()).digest())
-
-        Data = base64.b64decode(s)
-        Checksum = Data[-32:]
-        Ciphertext = Data[0:-32]
-        Plaintext = Cipher.decrypt(Ciphertext)
-
-        assert SHA256.new(Plaintext).digest() == Checksum
-        return Plaintext.decode()
