@@ -119,19 +119,27 @@ def main(XTSFilePath : str, UserName, ComputerName, SID, MasterPassword):
         print()
 
         for File in XTSFile.infolist():
-            FileName = File.filename.lower()
-            if FileName == 'xts.zcf':
+            if File.flag_bits & 0x800:
+                FileName = File.filename
+            else:
+                try:
+                    FileName = File.filename.encode('cp437').decode('ansi')
+                except:
+                    FileName = File.filename
+            
+            FileNameL = FileName.lower()
+            if FileNameL == 'xts.zcf':
                 continue
             
-            if FileName.startswith('xshell/') and FileName.endswith('.xsh'):
+            if FileNameL.startswith('xshell/') and FileNameL.endswith('.xsh'):
                 config.clear()
                 config.read_string(TryDecode(XTSFile.read(File.filename)))
-                print(File.filename)
+                print(FileName)
                 XTSPrintXShellSession(config, UserName, SID, MasterPassword)
-            elif FileName.startswith('xftp/') and FileName.endswith('.xfp'):
+            elif FileNameL.startswith('xftp/') and FileNameL.endswith('.xfp'):
                 config.clear()
                 config.read_string(TryDecode(XTSFile.read(File.filename)))
-                print(File.filename)
+                print(FileName)
                 XTSPrintXFtpSession(config, UserName, SID, MasterPassword)
                 print()
             else:
