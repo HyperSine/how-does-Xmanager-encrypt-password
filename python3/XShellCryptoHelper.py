@@ -23,7 +23,7 @@ def help():
     print('    <-e|-d>:                     Specify encryption(-e) or decryption(-d).')
     print('')
     print('    [-ver ver_string]:           Specify version of session file.') 
-    print('                                 float_string can be "5.1", "5.2", "6.0" and etc.')
+    print('                                 ver_string can be "5.1", "5.2", "6.0" and etc.')
     print('                                 If not specified, the latest version will be used.')
     print('')
     print('    [-user user_string]:         Specify username. This parameter will be used if version > 5.2.')
@@ -33,6 +33,7 @@ def help():
     print('                                 If not specified, the current user\'s SID will be used.')
     print('')
     print('    [-key key_string]:           Specify user\'s master password.')
+    print('                                 If specified, implicit "-ver 6.0"')
     print('')
     print('    <password_str|base64_str>:   Plain password text or base64-encoded encrypted text.')
     print('')
@@ -86,6 +87,8 @@ def main():
 
     if ver == None:
         ver = 0xffff
+    if key != None:
+        ver = 6.0
     
     if key == None and float(ver) >= 5.1 and sid == None:
         sid = GetCurrentSID()
