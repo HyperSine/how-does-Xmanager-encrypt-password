@@ -27,10 +27,8 @@ After you input your username and password then click "Ok", Xshell and Xftp will
 |XFtp 5  |`%userprofile%\Documents\NetSarang\Xftp\Sessions`              |
 |XShell 6|`%userprofile%\Documents\NetSarang Computer\6\Xshell\Sessions` |
 |XFtp 6  |`%userprofile%\Documents\NetSarang Computer\6\Xftp\Sessions`   |
+|XShell 7|`%userprofile%\Documents\NetSarang Computer\7\Xshell\Sessions` |
 
-The following is a sample session file created by Xftp 5:
-
-<img src = "Xftp_config_file.png">
 
 You can find there is a field named `Password` and the value of this field seems to be encoded by Base64 (Yes, you are right).
 
@@ -45,6 +43,8 @@ See [here](doc/how-does-Xmanager-encrypt-password.md).
 Make sure that you have installed `Python3`.
 
 Make sure that you have installed `pypiwin32`, `pycryptodome` module.
+
+For XShell7 users, remember to set main password first (主控密码). Use main password as key to decrypt.
 
 ```
 Usage:
