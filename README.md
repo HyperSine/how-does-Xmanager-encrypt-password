@@ -1,7 +1,7 @@
-# How Does Xmanager Encrypt password?
+# XShell-password-decryptor
 
 This repo will tell you how Xmanager encrypts password and offer a tool to reveal passwords encrypted by Xmanager.
-
+ 
 ## 1. What is Xmanager?
 
 Xmanager is the market's leading PC X server that brings the power of X applications to a Windows environment.
