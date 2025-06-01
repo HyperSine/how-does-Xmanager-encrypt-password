@@ -19,13 +19,19 @@ class XShellCrypto(object):
             self._Key = MD5.new(b'!X@s#h$e%l^l&').digest()
         elif 5.1 <= self._Version and self._Version <= 5.2:
             self._Key = SHA256.new(kwargs['SID'].encode()).digest()
-        elif 5.2 < self._Version:
+        elif 5.2 < self._Version < 7.0:
             if kwargs.get('MasterPassword') == None:
                 self._Key = SHA256.new((kwargs['UserName'] + kwargs['SID']).encode()).digest()
             else:
                 self._Key = SHA256.new(kwargs['MasterPassword'].encode()).digest()
+        elif self._Version >= 7.0:
+            if kwargs.get('MasterPassword') == None:
+                self._Key = SHA256.new((kwargs['UserName'][::-1] + kwargs['SID'])[::-1].encode()).digest()
+            else:
+                self._Key = SHA256.new(kwargs['MasterPassword'].encode()).digest()
         else:
             raise ValueError('Invalid argument: SessionFileVersion')
+
 
     def EncryptString(self, String : str):
         Cipher = ARC4.new(self._Key)
@@ -65,13 +71,19 @@ class XFtpCrypto(object):
             self._Key = MD5.new(b'!X@s#c$e%l^l&').digest()      # key is different with the one in XShellCrypto
         elif 5.1 <= self._Version and self._Version <= 5.2:
             self._Key = SHA256.new(kwargs['SID'].encode()).digest()
-        elif 5.2 < self._Version:
+        elif 5.2 < self._Version < 7.0:
             if kwargs.get('MasterPassword') == None:
                 self._Key = SHA256.new((kwargs['UserName'] + kwargs['SID']).encode()).digest()
             else:
                 self._Key = SHA256.new(kwargs['MasterPassword'].encode()).digest()
+        elif self._Version >= 7.0:
+            if kwargs.get('MasterPassword') == None:
+                self._Key = SHA256.new((kwargs['UserName'][::-1] + kwargs['SID'])[::-1].encode()).digest()
+            else:
+                self._Key = SHA256.new(kwargs['MasterPassword'].encode()).digest()
         else:
             raise ValueError('Invalid argument: SessionFileVersion')
+
 
     def EncryptString(self, String : str):
         Cipher = ARC4.new(self._Key)
