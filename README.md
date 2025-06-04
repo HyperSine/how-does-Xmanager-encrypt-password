@@ -27,6 +27,10 @@ After you input your username and password then click "Ok", Xshell and Xftp will
 |XFtp 5  |`%userprofile%\Documents\NetSarang\Xftp\Sessions`              |
 |XShell 6|`%userprofile%\Documents\NetSarang Computer\6\Xshell\Sessions` |
 |XFtp 6  |`%userprofile%\Documents\NetSarang Computer\6\Xftp\Sessions`   |
+|XShell 7|`%userprofile%\Documents\NetSarang Computer\7\Xshell\Sessions` |
+|XFtp 7  |`%userprofile%\Documents\NetSarang Computer\7\Xftp\Sessions`   |
+|XShell 8|`%userprofile%\Documents\NetSarang Computer\8\Xshell\Sessions` |
+|XFtp 8  |`%userprofile%\Documents\NetSarang Computer\8\Xftp\Sessions`   |
 
 The following is a sample session file created by Xftp 5:
 
